@@ -1,0 +1,32 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build app
+    image: node:current-alpine
+    commands:
+      - npm install
+      - npm run build
+
+  - name: publish docker image
+    image: plugins/docker
+    settings:
+      registry: docker-hub.cynicsoft.net
+      username:
+        from_secret: cynicsoft_registry_username
+      password:
+        from_secret: cynicsoft_registry_password
+      repo: jon-chen/homepage
+      tags: $DRONE_BRANCH
+
+  - name: trigger repo
+    image: plugins/downstream
+    settings:
+      server: http://drone-server
+      token:
+        from_secret: drone_token
+      repositories: [jon-chen-configs/homepage-stack]
+
+trigger:
+  event: [push, custom]
+  branch: [drone-ci]
