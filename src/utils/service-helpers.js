@@ -71,7 +71,7 @@ export async function servicesFromDocker() {
           return discovered;
         }
 
-        discovered.push(services.map((service) => constructService(service.Labels, service.Spec.Name)));
+        discovered.push(services.map((service) => constructService(service.Spec.Labels, service.Spec.Name)));
       }
 
       const containers = await docker.listContainers({
