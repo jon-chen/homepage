@@ -109,7 +109,7 @@ steps:
       server: http://drone-server
       token:
         from_secret: drone_token
-      repositories: [jon-chen-configs/homepage-stack]
+      repositories: [jon-chen-configs/homepage-stack@master]
 
 trigger:
   event: [push, custom]
