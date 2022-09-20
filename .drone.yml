@@ -22,7 +22,7 @@ steps:
   - name: publish docker image
     image: automagistre/docker:stable
     environment:
-      - "IMAGE_TAG=docker-hub.cynicsoft.net/jon-chen/homepage:$DRONE_BRANCH"
+      IMAGE_TAG: docker-hub.cynicsoft.net/jon-chen/homepage:$DRONE_BRANCH
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
