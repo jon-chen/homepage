@@ -2,11 +2,38 @@ kind: pipeline
 name: default
 
 steps:
+  - name: restore build cache
+    image: meltwater/drone-cache
+    settings:
+      backend: "filesystem"
+      restore: true
+      cache_key: "volume"
+      archive_format: "gzip"
+      mount:
+        - 'node_modules'
+    volumes:
+    - name: cache
+      path: /tmp/cache
+
   - name: build app
     image: node:current-alpine
     commands:
       - npm install
       - npm run build
+
+  - name: rebuild build cache
+    image: meltwater/drone-cache
+    settings:
+      backend: "filesystem"
+      rebuild: true
+      cache_key: "volume"
+      archive_format: "gzip"
+      # filesystem_cache_root: "/tmp/cache"
+      mount:
+        - 'node_modules'
+    volumes:
+    - name: cache
+      path: /tmp/cache
 
   # Dockerfile doesn't build in docker plugin
   # - name: publish docker image
@@ -22,7 +49,7 @@ steps:
   - name: publish docker image
     image: automagistre/docker:stable
     environment:
-      IMAGE_TAG: docker-hub.cynicsoft.net/jon-chen/homepage:$DRONE_BRANCH
+      IMAGE_TAG: docker-hub.cynicsoft.net/homepage:$DRONE_BRANCH
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
@@ -42,6 +69,9 @@ volumes:
   - name: docker.sock
     host:
       path: /var/run/docker.sock
+  - name: cache
+    host:
+      path: /var/lib/cache
 
 
 trigger:
