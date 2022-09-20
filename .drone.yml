@@ -47,31 +47,24 @@ steps:
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
+      - name: docker-config
+        path: /root/.docker
     commands:
       - echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin "docker-hub.cynicsoft.net"
 
-  # Dockerfile doesn't build in docker plugin
-  # - name: publish docker image
-  #   image: plugins/docker
-  #   settings:
-  #     registry: docker-hub.cynicsoft.net
-  #     username:
-  #       from_secret: cynicsoft_registry_username
-  #     password:
-  #       from_secret: cynicsoft_registry_password
-  #     repo: jon-chen/homepage
-  #     tags: $DRONE_BRANCH
   - name: publish docker image
     image: automagistre/docker:stable
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
+      - name: docker-config
+        path: /root/.docker
     commands:
       - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_REPO_BRANCH
       - docker image build --tag $IMAGE_TAG .
       - docker push $IMAGE_TAG
-    depends_on:
-      - docker login
+    # depends_on:
+    #   - docker login
 
   - name: trigger repo
     image: plugins/downstream
@@ -88,6 +81,8 @@ volumes:
   - name: cache
     host:
       path: /tmp
+  - name: docker-config
+    temp: {}
 
 
 trigger:
