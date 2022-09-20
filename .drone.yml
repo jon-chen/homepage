@@ -37,12 +37,10 @@ steps:
     - name: cache
       path: /tmp/cache
 
-
 volumes:
   - name: cache
     host:
       path: /tmp
-
 
 trigger:
   event: [push, custom]
@@ -75,11 +73,13 @@ steps:
         path: /var/run/docker.sock
       - name: docker-config
         path: /root/.docker
+    cache_from:
+      - "jon-chen/homepage:master"
+      - "jon-chen/homepage:${DRONE_COMMIT_BRANCH}"
     commands:
       - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_COMMIT_BRANCH
       - docker image build --tag $IMAGE_TAG .
       - docker push $IMAGE_TAG
-
 
 volumes:
   - name: docker.sock
@@ -91,7 +91,6 @@ volumes:
   - name: docker-config
     temp: {}
 
-
 trigger:
   event: [push, custom]
   branch: [drone-ci]
@@ -99,6 +98,9 @@ trigger:
 ---
 kind: pipeline
 name: trigger repo
+
+clone:
+  disable: true
 
 steps:
   - name: trigger repo
@@ -108,7 +110,6 @@ steps:
       token:
         from_secret: drone_token
       repositories: [jon-chen-configs/homepage-stack]
-
 
 trigger:
   event: [push, custom]
