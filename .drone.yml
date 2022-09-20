@@ -60,7 +60,7 @@ steps:
       - name: docker-config
         path: /root/.docker
     commands:
-      - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_REPO_BRANCH
+      - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_COMMIT_BRANCH
       - docker image build --tag $IMAGE_TAG .
       - docker push $IMAGE_TAG
     # depends_on:
