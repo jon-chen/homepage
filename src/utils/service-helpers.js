@@ -45,6 +45,35 @@ export async function servicesFromDocker() {
   const serviceServers = await Promise.all(
     Object.keys(servers).map(async (serverName) => {
       const docker = new Docker(getDockerArguments(serverName));
+      const discovered = [];
+
+      function constructService(labels, name) {
+        let constructedService = null;
+
+        Object.keys(labels).forEach((label) => {
+          if (label.startsWith("homepage")) {
+            if (!constructedService) {
+              constructedService = {
+                container: name.replace(/^\//, ""),
+                server: serverName,
+              };
+            }
+            shvl.set(constructedService, label.replace("homepage.", ""), labels[label]);
+          }
+        });
+
+        return constructedService;
+      }
+
+      const services = await docker.listServices();
+      if (services) {
+        if (!Array.isArray(services)) {
+          return discovered;
+        }
+
+        discovered.push(services.map((service) => constructService(service.Labels, service.Spec.Name)));
+      }
+
       const containers = await docker.listContainers({
         all: true,
       });
@@ -52,26 +81,12 @@ export async function servicesFromDocker() {
       // bad docker connections can result in a <Buffer ...> object?
       // in any case, this ensures the result is the expected array
       if (!Array.isArray(containers)) {
-        return [];
+        return discovered;
       }
 
-      const discovered = containers.map((container) => {
-        let constructedService = null;
-
-        Object.keys(container.Labels).forEach((label) => {
-          if (label.startsWith("homepage")) {
-            if (!constructedService) {
-              constructedService = {
-                container: container.Names[0].replace(/^\//, ""),
-                server: serverName,
-              };
-            }
-            shvl.set(constructedService, label.replace("homepage.", ""), container.Labels[label]);
-          }
-        });
-
-        return constructedService;
-      });
+      if (containers) {
+        discovered.push(containers.map((container) => constructService(container.Labels, container.Names[0])));
+      }
 
       return { server: serverName, services: discovered.filter((filteredService) => filteredService) };
     })
