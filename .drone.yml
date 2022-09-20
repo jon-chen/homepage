@@ -48,12 +48,11 @@ steps:
   #     tags: $DRONE_BRANCH
   - name: publish docker image
     image: automagistre/docker:stable
-    environment:
-      IMAGE_TAG: docker-hub.cynicsoft.net/homepage:$DRONE_REPO_BRANCH
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
     commands:
+      - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_REPO_BRANCH
       - docker image build --tag $IMAGE_TAG .
       - docker push $IMAGE_TAG
 
