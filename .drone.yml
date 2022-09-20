@@ -87,4 +87,4 @@ volumes:
 
 trigger:
   event: [push, custom]
-  branch: [drone-ci]
+  branch: [docker-swarm]
