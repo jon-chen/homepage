@@ -11,6 +11,7 @@ steps:
       archive_format: "gzip"
       mount:
         - 'node_modules'
+        - '.next'
     volumes:
     - name: cache
       path: /tmp/cache
@@ -31,6 +32,7 @@ steps:
       # filesystem_cache_root: "/tmp/cache"
       mount:
         - 'node_modules'
+        - '.next'
     volumes:
     - name: cache
       path: /tmp/cache
