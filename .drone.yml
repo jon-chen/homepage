@@ -8,16 +8,27 @@ steps:
       - npm install
       - npm run build
 
+  # Dockerfile doesn't build in docker plugin
+  # - name: publish docker image
+  #   image: plugins/docker
+  #   settings:
+  #     registry: docker-hub.cynicsoft.net
+  #     username:
+  #       from_secret: cynicsoft_registry_username
+  #     password:
+  #       from_secret: cynicsoft_registry_password
+  #     repo: jon-chen/homepage
+  #     tags: $DRONE_BRANCH
   - name: publish docker image
-    image: plugins/docker
-    settings:
-      registry: docker-hub.cynicsoft.net
-      username:
-        from_secret: cynicsoft_registry_username
-      password:
-        from_secret: cynicsoft_registry_password
-      repo: jon-chen/homepage
-      tags: $DRONE_BRANCH
+    image: automagistre/docker:stable
+    environment:
+      - "IMAGE_TAG=docker-hub.cynicsoft.net/jon-chen/homepage:$DRONE_BRANCH"
+    volumes:
+      - name: docker.sock
+        path: /var/run/docker.sock
+    commands:
+      - docker image build --tag $IMAGE_TAG .
+      - docker push $IMAGE_TAG
 
   - name: trigger repo
     image: plugins/downstream
@@ -26,6 +37,12 @@ steps:
       token:
         from_secret: drone_token
       repositories: [jon-chen-configs/homepage-stack]
+
+volumes:
+  - name: docker.sock
+    host:
+      path: /var/run/docker.sock
+
 
 trigger:
   event: [push, custom]
