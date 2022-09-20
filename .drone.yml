@@ -97,13 +97,13 @@ trigger:
 
 ---
 kind: pipeline
-name: trigger repo
+name: downstream
 
 clone:
   disable: true
 
 steps:
-  - name: trigger repo
+  - name: trigger repository
     image: plugins/downstream
     settings:
       server: http://drone-server
