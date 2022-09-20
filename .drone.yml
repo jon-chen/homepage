@@ -71,7 +71,7 @@ volumes:
       path: /var/run/docker.sock
   - name: cache
     host:
-      path: /tmp/drone
+      path: /tmp
 
 
 trigger:
