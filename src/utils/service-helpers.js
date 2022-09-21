@@ -66,12 +66,8 @@ export async function servicesFromDocker() {
       }
 
       const services = await docker.listServices();
-      if (services) {
-        if (!Array.isArray(services)) {
-          return discovered;
-        }
-
-        discovered.push(services.map((service) => constructService(service.Spec.Labels, service.Spec.Name)));
+      if (Array.isArray(services)) {
+        discovered.push(...services.map((service) => constructService(service.Spec.Labels, service.Spec.Name)));
       }
 
       const containers = await docker.listContainers({
@@ -80,12 +76,8 @@ export async function servicesFromDocker() {
 
       // bad docker connections can result in a <Buffer ...> object?
       // in any case, this ensures the result is the expected array
-      if (!Array.isArray(containers)) {
-        return discovered;
-      }
-
-      if (containers) {
-        discovered.push(containers.map((container) => constructService(container.Labels, container.Names[0])));
+      if (Array.isArray(containers)) {
+        discovered.push(...containers.map((container) => constructService(container.Labels, container.Names[0])));
       }
 
       return { server: serverName, services: discovered.filter((filteredService) => filteredService) };
