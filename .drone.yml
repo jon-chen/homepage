@@ -68,6 +68,8 @@ steps:
 
   - name: publish docker image
     image: automagistre/docker:stable
+    environment:
+      DOCKER_REGISTRY: docker-hub.cynicsoft.net
     volumes:
       - name: docker.sock
         path: /var/run/docker.sock
@@ -77,9 +79,12 @@ steps:
       - "jon-chen/homepage:master"
       - "jon-chen/homepage:${DRONE_COMMIT_BRANCH}"
     commands:
-      - export IMAGE_TAG=docker-hub.cynicsoft.net/homepage:$DRONE_COMMIT_BRANCH
-      - docker image build --tag $IMAGE_TAG .
-      - docker push $IMAGE_TAG
+      - export IMAGE_NAME=${DOCKER_REGISTRY}/${DRONE_REPO_NAME}
+      - docker image build --tag ${DRONE_REPO_NAME} .
+      - docker tag ${DRONE_REPO_NAME} ${IMAGE_NAME}:latest
+      - docker tag ${DRONE_REPO_NAME} ${IMAGE_NAME}:$DRONE_COMMIT_BRANCH
+      - docker tag ${DRONE_REPO_NAME} ${IMAGE_NAME}:$DRONE_BUILD_NUMBER
+      - docker push ${IMAGE_NAME}
 
 volumes:
   - name: docker.sock
