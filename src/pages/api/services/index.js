@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   }
 
   const mergedGroupsNames = [
-    ...new Set([discoveredServices.map((group) => group.name), configuredServices.map((group) => group.name)].flat()),
+    ...new Set([configuredServices.map((group) => group.name), discoveredServices.map((group) => group.name)].flat()),
   ];
 
   const mergedGroups = [];
