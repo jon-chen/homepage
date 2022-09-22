@@ -117,6 +117,8 @@ steps:
       token:
         from_secret: drone_token
       repositories: [jon-chen-configs/homepage-stack@master]
+      params:
+        - DEPLOY_VERSION=$DRONE_BUILD_NUMBER
 
 trigger:
   event: [push, custom]
