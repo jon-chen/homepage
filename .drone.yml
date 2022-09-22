@@ -111,13 +111,13 @@ clone:
 
 steps:
   - name: trigger repository
-    image: plugins/downstream
+    # image: plugins/downstream
+    image: grafana/drone-downstream
     settings:
       server: http://drone-server
       token:
         from_secret: drone_token
       repositories: [jon-chen-configs/homepage-stack@master]
-      fork: true
       params:
         - DEPLOY_VERSION=$DRONE_BUILD_NUMBER
 
