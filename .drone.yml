@@ -117,6 +117,7 @@ steps:
       token:
         from_secret: drone_token
       repositories: [jon-chen-configs/homepage-stack@master]
+      fork: true
       params:
         - DEPLOY_VERSION=$DRONE_BUILD_NUMBER
 
