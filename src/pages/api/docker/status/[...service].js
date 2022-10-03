@@ -4,8 +4,7 @@ import getDockerArguments from "utils/docker";
 
 export default async function handler(req, res) {
   const { service } = req.query;
-  const [,containerServer] = service;
-  let [containerName,] = service;
+  const [containerName,containerServer] = service;
   let containerExists = false;
 
   if (!containerName && !containerServer) {
@@ -42,7 +41,7 @@ export default async function handler(req, res) {
       
       if (runningContainer) {
         return res.status(200).json({
-          status: task.Status.State,
+          status: runningContainer.Status.State,
         });
       }
     }
