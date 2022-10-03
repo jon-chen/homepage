@@ -4,7 +4,7 @@ import getDockerArguments from "utils/docker";
 
 export default async function handler(req, res) {
   const { service } = req.query;
-  const [,containerServer] = service
+  const [,containerServer] = service;
   let [containerName,] = service;
   let containerExists = false;
 
@@ -35,9 +35,16 @@ export default async function handler(req, res) {
     
     // docker swarm task check.
     if (!containerExists) {
-      const pattern = `^${containerName}\\.\\d\\.`;
-      containerName = containerNames.find((c) => c.search(new RegExp(pattern)));
-      containerExists = containerExists || containerName;
+      const tasks = await docker.listTasks({ 
+        service: [containerName]
+      });
+      const runningContainer = tasks.find((task) => task.Status.State === 'running');
+      
+      if (runningContainer) {
+        return res.status(200).json({
+          status: task.Status.State,
+        });
+      }
     }
 
     if (!containerExists) {
